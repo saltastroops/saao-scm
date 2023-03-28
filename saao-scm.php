@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: saao-scm
+ * Plugin Name: SAAO SCM
  * Plugin URI: https://www.saao.ac.za/
  * Description: WordPress plugin for the SAAO's SCM sites.
  * Version: 0.1
