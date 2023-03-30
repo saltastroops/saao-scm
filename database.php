@@ -18,9 +18,9 @@ class SCMDatabase {
             $username = get_option('saao_scm_database_username');
             $password = get_option('saao_scm_database_password');
             $database_name = get_option('saao_scm_database_name');
-            SCMDatabase::$pdo = new PDO("mysql:host=$host;dbname=$database_name", $username, $password);
+            SCMDatabase::$pdo = new PDO("mysql:host=$host;dbname=$database_name", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
         }
 
         return SCMDatabase::$pdo;
-}
+    }
 }

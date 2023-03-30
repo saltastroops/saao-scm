@@ -9,6 +9,8 @@
  * Author URI: https://www.saao.ac.za/
  **/
 
+require_once 'database.php';
+
 /*
  * SETTINGS PAGE
  *
@@ -91,4 +93,45 @@ function saao_scm_settings_page()
         ?>
     </form>
     <?php
+}
+
+/**
+ * GRAVITY FORMS
+ */
+
+$form_id = '_1';
+
+add_action('gform_pre_submission' . $form_id, 'saao_scm_pre_submission_handler');
+
+function saao_scm_pre_submission_handler($form)
+{
+    $year = date('Y');
+    $sequential_number = saao_scm_get_sequential_number($year);
+
+    $pdo = SCMDatabase::get_pdo();
+    $stmt = $pdo->prepare("INSERT INTO RFQ (Year, Sequential_Number) VALUES (:year, :sequential_number)");
+    $stmt->execute([':year' => $year, ':sequential_number' => $sequential_number]);
+}
+
+/**
+ * Return the sequential number to use for a year.
+ *
+ * The returned value is the year's greatest sequential number in the database plus 1,
+ * or 1 if there is no sequential number for the year yet.
+ *
+ * @param $year
+ * @return int
+ */
+function saao_scm_get_sequential_number($year)
+{
+    $pdo = SCMDatabase::get_pdo();
+    $sql = <<<SQL
+SELECT MAX(Sequential_Number) AS max_sequential_number FROM RFQ WHERE Year = :year
+SQL;
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':year' => $year]);
+    $row = $stmt->fetch();
+    $sequential_number = $row['max_sequential_number'] ? $row['max_sequential_number'] + 1 : 1;
+    $stmt = null;
+    return $sequential_number;
 }
